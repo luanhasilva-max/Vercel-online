@@ -1,0 +1,1273 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luncy E</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lexend:wght@500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                blue: "#2563EB",
+                cyan: "#06B6D4",
+                purple: "#7C3AED",
+                pink: "#EC4899",
+                emerald: "#10B981",
+                amber: "#F59E0B",
+                dark: "#0B0F19",
+                card: "#151D30",
+              },
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              heading: ["Lexend", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      :root {
+        --font-scale: 1;
+      }
+      html {
+        font-size: calc(16px * var(--font-scale));
+        scroll-behavior: smooth;
+      }
+      *:focus-visible {
+        outline: 4px solid #f59e0b !important;
+        outline-offset: 4px !important;
+        border-radius: 4px;
+      }
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 1rem;
+        background: #f59e0b;
+        color: #000;
+        padding: 0.75rem 1.5rem;
+        font-weight: 800;
+        z-index: 100;
+        transition: top 0.2s ease;
+        border-radius: 0 0 8px 8px;
+      }
+      .skip-link:focus {
+        top: 0;
+      }
+      body.high-contrast {
+        background: #000 !important;
+        color: #fff !important;
+      }
+      body.high-contrast *,
+      body.high-contrast section,
+      body.high-contrast div {
+        background: #000 !important;
+        color: #ffff00 !important;
+        border-color: #ffff00 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+      }
+      body.high-contrast a,
+      body.high-contrast button {
+        color: #00ffff !important;
+        text-decoration: underline !important;
+      }
+      #reading-guide {
+        display: none;
+        position: fixed;
+        left: 0;
+        width: 100%;
+        height: 45px;
+        background: rgba(245, 158, 11, 0.25);
+        border-top: 2px solid #f59e0b;
+        border-bottom: 2px solid #f59e0b;
+        pointer-events: none;
+        z-index: 90;
+      }
+      body.dyslexic-mode * {
+        letter-spacing: 0.05em;
+        word-spacing: 0.1em;
+      }
+      @keyframes pulseGlow {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 1;
+        }
+      }
+      .animate-glow {
+        animation: pulseGlow 6s infinite ease-in-out;
+      }
+      @keyframes floaty {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      .animate-float {
+        animation: floaty 5s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        ::before,
+        ::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      .gradient-text {
+        background: linear-gradient(90deg, #06b6d4, #2563eb, #ec4899);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      details > summary {
+        cursor: pointer;
+      }
+      details[open] summary .chev {
+        transform: rotate(180deg);
+      }
+      .quiz-opt.correct {
+        border-color: #10b981 !important;
+        background: rgba(16, 185, 129, 0.15) !important;
+      }
+      .quiz-opt.wrong {
+        border-color: #ec4899 !important;
+        background: rgba(236, 72, 153, 0.15) !important;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-brand-dark text-slate-100 font-sans antialiased selection:bg-brand-pink selection:text-white"
+  >
+    <div id="reading-guide" aria-hidden="true"></div>
+    <a href="#main-content" class="skip-link"
+      >Pular para o conteúdo principal (Teclar Enter)</a
+    >
+
+    <aside
+      aria-label="Ferramentas de Acessibilidade"
+      class="fixed bottom-4 right-4 z-50 bg-slate-900/95 border-2 border-brand-cyan/60 backdrop-blur-xl p-3 rounded-2xl shadow-2xl shadow-brand-cyan/20 flex flex-wrap gap-2 items-center justify-center max-w-[92vw] sm:max-w-none"
+    >
+      <span class="sr-only">Painel de Acessibilidade Flutuante</span>
+      <button
+        onclick="changeFontSize(0.1)"
+        title="Aumentar tamanho do texto"
+        class="bg-slate-800 hover:bg-brand-blue text-white font-bold px-3 py-2 rounded-xl border border-slate-700 transition-all text-sm"
+      >
+        A+
+      </button>
+      <button
+        onclick="changeFontSize(-0.1)"
+        title="Diminuir tamanho do texto"
+        class="bg-slate-800 hover:bg-brand-blue text-white font-bold px-3 py-2 rounded-xl border border-slate-700 transition-all text-sm"
+      >
+        A-
+      </button>
+      <button
+        onclick="toggleHighContrast()"
+        title="Alternar alto contraste"
+        class="bg-slate-800 hover:bg-brand-amber hover:text-black text-brand-amber font-bold px-3 py-2 rounded-xl border border-brand-amber/40 transition-all text-sm"
+      >
+        Contraste
+      </button>
+      <button
+        onclick="toggleDyslexicFont()"
+        title="Fonte facilitada"
+        class="bg-slate-800 hover:bg-brand-purple text-white font-bold px-3 py-2 rounded-xl border border-slate-700 transition-all text-sm"
+      >
+        Dislexia
+      </button>
+      <button
+        onclick="toggleReadingGuide()"
+        title="Régua de leitura"
+        class="bg-slate-800 hover:bg-brand-pink text-white font-bold px-3 py-2 rounded-xl border border-slate-700 transition-all text-sm"
+      >
+        Régua
+      </button>
+      <button
+        onclick="toggleVoiceReader()"
+        title="Leitor de voz"
+        id="btn-voice"
+        class="bg-slate-800 hover:bg-brand-emerald text-white font-bold px-3 py-2 rounded-xl border border-slate-700 transition-all text-sm"
+      >
+        <span id="voice-status">🔊 Ouvir</span>
+      </button>
+    </aside>
+
+    <header
+      class="sticky top-0 z-40 bg-brand-dark/90 backdrop-blur-md border-b border-slate-800"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between"
+      >
+        <a href="#" class="flex items-center gap-3 group">
+          <div
+            class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-blue via-brand-purple to-brand-pink p-0.5 shadow-lg shadow-brand-blue/30 group-hover:scale-105 transition-transform"
+          >
+            <div
+              class="w-full h-full bg-brand-dark rounded-[14px] flex items-center justify-center"
+            >
+              <svg
+                class="w-7 h-7 text-brand-cyan"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <span
+              class="font-heading font-black text-xl sm:text-2xl gradient-text tracking-tight"
+              >Luncy Site</span
+            >
+            <p class="text-xs text-brand-cyan font-medium hidden sm:block">
+              Inclusão, Acessibilidade e Autonomia Digital
+            </p>
+          </div>
+        </a>
+        <nav
+          aria-label="Menu Principal"
+          class="hidden lg:flex items-center gap-1 bg-slate-900/80 border border-slate-800 p-1.5 rounded-full"
+        >
+          <a
+            href="#apresentacao"
+            class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-full transition-all"
+            >Início</a
+          >
+          <a
+            href="#sociedade"
+            class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-full transition-all"
+            >Sociedade</a
+          >
+          <a
+            href="#tecnologia"
+            class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-full transition-all"
+            >Tecnologia</a
+          >
+          <a
+            href="#futuro"
+            class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-full transition-all"
+            >IA & Futuro</a
+          >
+          <a
+            href="#galeria"
+            class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-full transition-all"
+            >Galeria</a
+          >
+          <a
+            href="#multimidia"
+            class="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-full transition-all"
+            >Mídias</a
+          >
+        </nav>
+        <a
+          href="#quiz"
+          class="hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-brand-blue to-brand-purple hover:from-brand-purple hover:to-brand-pink text-white font-extrabold px-5 py-2.5 rounded-full shadow-lg shadow-brand-blue/25 hover:scale-105 transition-all text-sm"
+        >
+          <span>Testar Conhecimento</span>
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M14 5l7 7m0 0l-7 7m7-7H3"
+            />
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <main id="main-content" class="relative overflow-hidden">
+      <div
+        class="absolute top-0 left-1/4 w-96 h-96 bg-brand-blue/20 rounded-full blur-[128px] pointer-events-none animate-glow"
+        aria-hidden="true"
+      ></div>
+      <div
+        class="absolute top-1/3 right-10 w-[30rem] h-[30rem] bg-brand-purple/20 rounded-full blur-[140px] pointer-events-none animate-glow"
+        aria-hidden="true"
+      ></div>
+      <div
+        class="absolute top-2/3 left-10 w-[30rem] h-[30rem] bg-brand-pink/15 rounded-full blur-[140px] pointer-events-none animate-glow"
+        aria-hidden="true"
+      ></div>
+
+      <!-- APRESENTAÇÃO -->
+      <section
+        id="apresentacao"
+        class="py-16 lg:py-24 border-b border-slate-800/80"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+          >
+            <div class="space-y-6">
+              <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-blue/10 border border-brand-blue/30 text-brand-cyan text-xs font-bold uppercase tracking-wider"
+              >
+                <span
+                  class="w-2 h-2 rounded-full bg-brand-cyan animate-ping"
+                ></span>
+                Conscientização & Cidadania Digital
+              </div>
+              <h1
+                class="font-heading text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-white"
+              >
+                Tecnologia para Todos:
+                <span class="gradient-text">Inclusão Sem Barreiras</span>
+              </h1>
+              <p class="text-lg text-slate-300 leading-relaxed">
+                A verdadeira inovação digital não deixa ninguém para trás. Criar
+                um ambiente acessível significa garantir que pessoas cegas,
+                surdas, com mobilidade reduzida ou neurodivergentes possam
+                navegar, aprender e trabalhar com plena autonomia.
+              </p>
+              <div class="flex flex-wrap gap-4 pt-2">
+                <a
+                  href="#sociedade"
+                  class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-brand-blue/30 transition-all"
+                  >Explorar o Projeto</a
+                >
+                <a
+                  href="#multimidia"
+                  class="inline-flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 text-white border border-slate-700 font-bold px-6 py-3.5 rounded-xl transition-all"
+                  >Assistir / Ouvir Mídias</a
+                >
+              </div>
+              <div class="grid grid-cols-3 gap-4 pt-6 max-w-md">
+                <div>
+                  <p class="font-heading text-2xl font-black text-brand-cyan">
+                    3+
+                  </p>
+                  <p class="text-xs text-slate-400">Imagens acessíveis</p>
+                </div>
+                <div>
+                  <p class="font-heading text-2xl font-black text-brand-pink">
+                    2
+                  </p>
+                  <p class="text-xs text-slate-400">Mídias com transcrição</p>
+                </div>
+                <div>
+                  <p
+                    class="font-heading text-2xl font-black text-brand-emerald"
+                  >
+                    100%
+                  </p>
+                  <p class="text-xs text-slate-400">Navegável por teclado</p>
+                </div>
+              </div>
+            </div>
+            <div class="relative group animate-float">
+              <div
+                class="absolute -inset-1 bg-gradient-to-r from-brand-cyan via-brand-blue to-brand-purple rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition duration-1000"
+              ></div>
+              <div
+                class="relative bg-brand-card border border-slate-700/80 rounded-3xl p-4 sm:p-6 shadow-2xl"
+              >
+                <img
+                src="./assets/evolucao.png.jpg"
+                  alt="Linha do tempo da evolução humana até um robô humanoide, unindo um cenário industrial e um ambiente digital futurista."
+                  class="w-full h-auto max-h-[380px] object-cover rounded-2xl"
+                />
+                <p class="text-xs text-slate-400 text-center mt-3 font-medium">
+                  Da evolução biológica à evolução digital: a tecnologia como
+                  nova etapa da inclusão humana.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SOCIEDADE -->
+      <section
+        id="sociedade"
+        class="py-16 lg:py-24 border-b border-slate-800/80 bg-slate-900/40"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+          >
+            <div class="order-2 lg:order-1 relative group">
+              <div
+                class="absolute -inset-1 bg-gradient-to-r from-brand-emerald to-brand-blue rounded-3xl blur-xl opacity-40 group-hover:opacity-70 transition duration-700"
+              ></div>
+              <div
+                class="relative bg-brand-card border border-slate-700/80 rounded-3xl p-4 sm:p-6 shadow-2xl"
+              >
+                <img
+                src="./assets/maos.png.jpg"
+                  alt="Ilustração de várias mãos de diferentes tons de pele encaixando peças coloridas de quebra-cabeça em círculo, representando diversidade e colaboração."
+                  class="w-full h-auto max-h-[380px] object-cover rounded-2xl"
+                />
+                <span
+                  class="block text-xs text-slate-400 text-center mt-3 font-medium"
+                  >União e diversidade: a colaboração de diferentes perspectivas
+                  na sociedade.</span
+                >
+              </div>
+            </div>
+            <div class="order-1 lg:order-2 space-y-6">
+              <div
+                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-emerald/10 border border-brand-emerald/30 text-brand-emerald text-xs font-bold uppercase tracking-wider"
+              >
+                Recorte 01 • Impacto Social
+              </div>
+              <h2
+                class="font-heading text-3xl sm:text-4xl font-black text-white leading-tight"
+              >
+                Sociedade: Inclusão Escolar, Emprego e Combate ao Preconceito
+              </h2>
+              <p class="text-slate-300 leading-relaxed">
+                A acessibilidade digital não é um luxo técnico, mas uma garantia
+                constitucional de direitos fundamentais.
+              </p>
+              <ul class="space-y-3 text-slate-300">
+                <li class="flex items-start gap-3">
+                  <span
+                    class="p-1 rounded-full bg-brand-emerald/20 text-brand-emerald mt-1"
+                    ><svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3"
+                        d="M5 13l4 4L19 7"
+                      /></svg></span
+                  ><span
+                    ><strong>Educação Sem Barreiras:</strong> alunos cegos ou
+                    com baixa visão usam leitores de tela sem impedimentos em
+                    provas e livros virtuais.</span
+                  >
+                </li>
+                <li class="flex items-start gap-3">
+                  <span
+                    class="p-1 rounded-full bg-brand-emerald/20 text-brand-emerald mt-1"
+                    ><svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3"
+                        d="M5 13l4 4L19 7"
+                      /></svg></span
+                  ><span
+                    ><strong>Mercado de Trabalho Plural:</strong> profissionais
+                    com deficiência competem em igualdade quando os softwares
+                    corporativos são acessíveis.</span
+                  >
+                </li>
+                <li class="flex items-start gap-3">
+                  <span
+                    class="p-1 rounded-full bg-brand-emerald/20 text-brand-emerald mt-1"
+                    ><svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="3"
+                        d="M5 13l4 4L19 7"
+                      /></svg></span
+                  ><span
+                    ><strong>Autonomia Diária:</strong> operações bancárias,
+                    compras e serviços públicos disponíveis para todos.</span
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TECNOLOGIA -->
+      <section
+        id="tecnologia"
+        class="py-16 lg:py-24 border-b border-slate-800/80"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+          >
+            <div class="space-y-6">
+              <div
+                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-xs font-bold uppercase tracking-wider"
+              >
+                Recorte 02 • Engenharia & Código
+              </div>
+              <h2
+                class="font-heading text-3xl sm:text-4xl font-black text-white leading-tight"
+              >
+                Tecnologia: Acessibilidade Digital e Recursos Assistivos
+              </h2>
+              <p class="text-slate-300 leading-relaxed">
+                Construir sites acessíveis exige que desenvolvedores compreendam
+                como as tecnologias assistivas interpretam o código-fonte. O uso
+                de <strong>HTML semântico</strong> é o pilar fundamental dessa
+                construção.
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div
+                  class="bg-brand-card p-4 rounded-2xl border border-slate-700/70 hover:border-brand-cyan transition-colors"
+                >
+                  <h3 class="font-bold text-brand-cyan text-base mb-1">
+                    HTML Semântico
+                  </h3>
+                  <p class="text-xs text-slate-300">
+                    Tags como <code>&lt;main&gt;</code>,
+                    <code>&lt;nav&gt;</code> e
+                    <code>&lt;article&gt;</code> orientam leitores de tela.
+                  </p>
+                </div>
+                <div
+                  class="bg-brand-card p-4 rounded-2xl border border-slate-700/70 hover:border-brand-pink transition-colors"
+                >
+                  <h3 class="font-bold text-brand-pink text-base mb-1">
+                    Atributos Alt e ARIA
+                  </h3>
+                  <p class="text-xs text-slate-300">
+                    Descrições em imagens e papéis ARIA corretos informam
+                    estados de elementos complexos.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="relative group">
+              <div
+                class="absolute -inset-1 bg-gradient-to-r from-brand-cyan via-brand-purple to-brand-pink rounded-3xl blur-xl opacity-40 group-hover:opacity-70 transition duration-700"
+              ></div>
+              <div
+                class="relative bg-brand-card border border-slate-700/80 rounded-3xl p-4 sm:p-6 shadow-2xl"
+              >
+                <img
+                src="./assets/Parent.jpg"
+                  alt="Menino iluminado pela tela do celular, rodeado por uma explosão de ícones de redes sociais e notificações flutuantes em ambiente escuro, simbolizando sobrecarga digital."
+                  class="w-full h-auto max-h-[380px] object-cover rounded-2xl"
+                />
+                <span
+                  class="block text-xs text-slate-400 text-center mt-3 font-medium"
+                  >A sobrecarga digital e a necessidade de interfaces mais
+                  acessíveis e organizadas.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FUTURO -->
+      <section
+        id="futuro"
+        class="py-16 lg:py-24 border-b border-slate-800/80 bg-slate-900/40"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+          >
+            <div class="order-2 lg:order-1 relative group">
+              <div
+                class="absolute -inset-1 bg-gradient-to-r from-brand-purple to-brand-pink rounded-3xl blur-xl opacity-40 group-hover:opacity-70 transition duration-700"
+              ></div>
+              <div
+                class="relative bg-brand-card border border-slate-700/80 rounded-3xl p-4 sm:p-6 shadow-2xl"
+              >
+                <img
+                src="./assets/futuro.png.jpg"
+                  alt="Colagem futurista com um jovem formando observando um robô de inteligência artificial e uma cidade com drones e dados projetados, ao lado de uma cena rural com trator automatizado."
+                  class="w-full h-auto max-h-[380px] object-cover rounded-2xl"
+                />
+                <span
+                  class="block text-xs text-slate-400 text-center mt-3 font-medium"
+                  >A IA transformando cidades, campo e o futuro do trabalho e da
+                  educação.</span
+                >
+              </div>
+            </div>
+            <div class="order-1 lg:order-2 space-y-6">
+              <div
+                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-purple/10 border border-brand-purple/30 text-brand-purple text-xs font-bold uppercase tracking-wider"
+              >
+                Recorte 03 • Inovação Responsável
+              </div>
+              <h2
+                class="font-heading text-3xl sm:text-4xl font-black text-white leading-tight"
+              >
+                Futuro: Como a Inteligência Artificial Apoia (ou Dificulta) a
+                Inclusão
+              </h2>
+              <p class="text-slate-300 leading-relaxed">
+                A IA generativa oferece possibilidades sem precedentes para
+                remover barreiras. Mas o fator humano continua essencial para
+                evitar erros e viéses.
+              </p>
+              <div class="space-y-4">
+                <div
+                  class="border-l-4 border-brand-emerald pl-4 py-1 bg-slate-800/30 rounded-r-xl"
+                >
+                  <h3 class="font-bold text-brand-emerald">
+                    O Lado Positivo da IA
+                  </h3>
+                  <p class="text-sm text-slate-300">
+                    Textos alternativos automáticos, síntese de áudio, tradução
+                    para Libras e simplificação de linguagem.
+                  </p>
+                </div>
+                <div
+                  class="border-l-4 border-brand-pink pl-4 py-1 bg-slate-800/30 rounded-r-xl"
+                >
+                  <h3 class="font-bold text-brand-pink">
+                    A Responsabilidade Humana
+                  </h3>
+                  <p class="text-sm text-slate-300">
+                    A IA pode gerar descrições genéricas ou preconceituosas.
+                    Revisar o conteúdo é dever ético da equipe.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GALERIA -->
+      <section id="galeria" class="py-16 lg:py-24 border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+            <div
+              class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-pink/10 border border-brand-pink/30 text-brand-pink text-xs font-bold uppercase tracking-wider"
+            >
+              Galeria Visual & Audiodescrição
+            </div>
+            <h2 class="font-heading text-3xl sm:text-4xl font-black text-white">
+              Blocos Visuais Acessíveis
+            </h2>
+            <p class="text-slate-300">
+              Todas as imagens informativas possuem texto alternativo objetivo e
+              recurso integrado de audiodescrição em texto e síntese de voz.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <article
+              class="bg-brand-card rounded-2xl border border-slate-700/80 overflow-hidden shadow-xl flex flex-col hover:border-brand-cyan transition-all"
+            >
+              <div
+                class="relative bg-slate-950 p-6 flex items-center justify-center min-h-[220px]"
+              >
+                <svg
+                  class="w-full h-36 text-brand-cyan"
+                  viewBox="0 0 300 180"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  role="img"
+                  aria-label="Pessoa utilizando teclado acessível com foco amarelo destacado na tela."
+                >
+                  <rect width="300" height="180" rx="12" fill="#1E293B" />
+                  <rect
+                    x="20"
+                    y="20"
+                    width="260"
+                    height="100"
+                    rx="8"
+                    fill="#0F172A"
+                    stroke="#2563EB"
+                  />
+                  <rect
+                    x="35"
+                    y="35"
+                    width="80"
+                    height="25"
+                    rx="4"
+                    fill="#2563EB"
+                    stroke="#F59E0B"
+                    stroke-width="3"
+                  />
+                  <rect
+                    x="125"
+                    y="35"
+                    width="80"
+                    height="25"
+                    rx="4"
+                    fill="#334155"
+                  />
+                  <rect
+                    x="60"
+                    y="130"
+                    width="180"
+                    height="35"
+                    rx="6"
+                    fill="#334155"
+                  />
+                  <circle cx="90" cy="147" r="4" fill="#F59E0B" />
+                </svg>
+              </div>
+              <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                <div>
+                  <span
+                    class="text-xs font-bold text-brand-cyan uppercase tracking-wider"
+                    >Navegação Teclado</span
+                  >
+                  <h3 class="text-lg font-bold text-white mt-1">
+                    Foco Visível & Navegação Sem Mouse
+                  </h3>
+                  <p class="text-xs text-slate-300 mt-2">
+                    Garantia de navegação por tecla Tab para pessoas com
+                    deficiência motora ou visual.
+                  </p>
+                </div>
+                <button
+                  onclick="
+                    speakText(
+                      'Audiodescrição do Bloco 1: Ilustração de uma tela de computador onde um botão retangular possui uma borda amarela espessa em destaque indicando o foco da tecla Tab.',
+                    )
+                  "
+                  class="w-full bg-slate-800 hover:bg-brand-cyan hover:text-black text-brand-cyan font-bold py-2.5 px-4 rounded-xl text-xs transition-colors"
+                >
+                  🔊 Ouvir Audiodescrição
+                </button>
+              </div>
+            </article>
+            <article
+              class="bg-brand-card rounded-2xl border border-slate-700/80 overflow-hidden shadow-xl flex flex-col hover:border-brand-purple transition-all"
+            >
+              <div
+                class="relative bg-slate-950 p-6 flex items-center justify-center min-h-[220px]"
+              >
+                <svg
+                  class="w-full h-36 text-brand-purple"
+                  viewBox="0 0 300 180"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  role="img"
+                  aria-label="Leitor de tela convertendo texto do código em sintetizador de áudio falado."
+                >
+                  <rect width="300" height="180" rx="12" fill="#1E293B" />
+                  <circle
+                    cx="150"
+                    cy="90"
+                    r="45"
+                    fill="#7C3AED"
+                    opacity="0.3"
+                  />
+                  <path
+                    d="M110 90 Q 110 70 130 70 M100 90 Q 100 60 140 60"
+                    stroke="#EC4899"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M190 90 Q 190 70 170 70 M200 90 Q 200 60 160 60"
+                    stroke="#EC4899"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                  />
+                  <circle cx="150" cy="90" r="15" fill="#EC4899" />
+                </svg>
+              </div>
+              <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                <div>
+                  <span
+                    class="text-xs font-bold text-brand-purple uppercase tracking-wider"
+                    >Acessibilidade Visual</span
+                  >
+                  <h3 class="text-lg font-bold text-white mt-1">
+                    Sintetizadores de Voz e Leitores de Tela
+                  </h3>
+                  <p class="text-xs text-slate-300 mt-2">
+                    Softwares como NVDA e TalkBack leem o conteúdo estruturado
+                    para pessoas cegas.
+                  </p>
+                </div>
+                <button
+                  onclick="
+                    speakText(
+                      'Audiodescrição do Bloco 2: Ícone central emitindo ondas sonoras concêntricas em cor rosa, representando a conversão de texto digital em fala por leitor de tela.',
+                    )
+                  "
+                  class="w-full bg-slate-800 hover:bg-brand-purple text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors"
+                >
+                  🔊 Ouvir Audiodescrição
+                </button>
+              </div>
+            </article>
+            <article
+              class="bg-brand-card rounded-2xl border border-slate-700/80 overflow-hidden shadow-xl flex flex-col hover:border-brand-emerald transition-all"
+            >
+              <div
+                class="relative bg-slate-950 p-6 flex items-center justify-center min-h-[220px]"
+              >
+                <svg
+                  class="w-full h-36 text-brand-emerald"
+                  viewBox="0 0 300 180"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  role="img"
+                  aria-label="Símbolo de Libras e legendas em tempo real ativas em vídeo."
+                >
+                  <rect width="300" height="180" rx="12" fill="#1E293B" />
+                  <rect
+                    x="20"
+                    y="20"
+                    width="260"
+                    height="140"
+                    rx="8"
+                    fill="#0F172A"
+                    stroke="#10B981"
+                  />
+                  <path d="M40 130 H260" stroke="#10B981" stroke-width="4" />
+                  <text
+                    x="50"
+                    y="120"
+                    fill="white"
+                    font-size="12"
+                    font-weight="bold"
+                  >
+                    Legendas em Tempo Real (CC)
+                  </text>
+                </svg>
+              </div>
+              <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                <div>
+                  <span
+                    class="text-xs font-bold text-brand-emerald uppercase tracking-wider"
+                    >Acessibilidade Auditiva</span
+                  >
+                  <h3 class="text-lg font-bold text-white mt-1">
+                    Legendas & Tradução em Libras
+                  </h3>
+                  <p class="text-xs text-slate-300 mt-2">
+                    Acomodação visual para pessoas surdas ou com deficiência
+                    auditiva em multimídia.
+                  </p>
+                </div>
+                <button
+                  onclick="
+                    speakText(
+                      'Audiodescrição do Bloco 3: Moldura simulando reprodução de vídeo com legenda ativada na cor verde no rodapé.',
+                    )
+                  "
+                  class="w-full bg-slate-800 hover:bg-brand-emerald text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors"
+                >
+                  🔊 Ouvir Audiodescrição
+                </button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÍDIAS: VÍDEO E PODCAST -->
+      <section
+        id="multimidia"
+        class="py-16 lg:py-24 border-b border-slate-800/80 bg-slate-900/40"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+            <div
+              class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/30 text-brand-cyan text-xs font-bold uppercase tracking-wider"
+            >
+              Conteúdo Multimídia
+            </div>
+            <h2 class="font-heading text-3xl sm:text-4xl font-black text-white">
+              Vídeo e Podcast, com transcrição completa
+            </h2>
+            <p class="text-slate-300">
+              Produzidos com apoio de IA. Logo abaixo de cada player, a
+              transcrição integral está disponível em texto.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 gap-8">
+            <div
+              class="bg-brand-card border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl"
+            >
+              <h3
+                class="font-heading text-xl font-bold text-white flex items-center gap-2 mb-4"
+              >
+                ▶ Vídeo — Tecnologia para Todos
+              </h3>
+              <video
+                controls
+                playsinline
+                preload="metadata"
+                aria-label="Vídeo Tecnologia para Todos"
+                class="w-full rounded-2xl bg-black"
+              >
+                <source src="Tecnologia, IA e Inclusão.mp4" type="video/mp4" />
+                Seu navegador não suporta vídeo em HTML5.
+              </video>
+              <p class="text-xs text-slate-400 mt-2">
+                ✓ Vídeo Tecnologia para Todos — reproduza usando os controles
+                abaixo.
+              </p>
+              <details
+                class="mt-4 bg-slate-950/60 border border-slate-700 rounded-2xl p-4"
+              >
+                <summary
+                  class="font-bold text-brand-cyan flex items-center justify-between"
+                >
+                  Ler transcrição completa do vídeo
+                  <span class="chev transition-transform">▾</span>
+                </summary>
+                <div class="mt-3 text-sm text-slate-300 leading-relaxed">
+                  <p>
+                    O vídeo analisa a relação entre inteligência artificial e
+                    acessibilidade digital no Brasil. Atualmente, a exclusão na
+                    web é preocupante: apenas 2,9% dos sites brasileiros são
+                    totalmente acessíveis, o que impede milhões de pessoas de
+                    aceder a serviços essenciais. Para combater este problema, a
+                    inteligência artificial surge como uma aliada, permitindo
+                    traduzir conteúdos para Libras (com ferramentas como Hand
+                    Talk e VLibras), criar textos alternativos em imagens e
+                    gerar audiodescrições. Contudo, o vídeo sublinha que a
+                    tecnologia não resolve tudo sozinha. O fator humano é
+                    indispensável:
+                  </p>
+                </div>
+              </details>
+            </div>
+            <div
+              class="bg-brand-card border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl"
+            >
+              <h3
+                class="font-heading text-xl font-bold text-white flex items-center gap-2 mb-4"
+              >
+                ♪ Podcast — Falando Sobre Inclusão
+              </h3>
+              <audio controls class="w-full mt-2">
+                <source
+                  src="Apenas_2,9__da_internet_brasileira_é_acessível.m4a"
+                  type="audio/mpeg"
+                />
+                Seu navegador não suporta áudio em HTML5.
+              </audio>
+              <p class="text-xs text-brand-emerald mt-2">
+                ✓ Episódio final do podcast — cerca de 2 minutos e 36 segundos.
+                — Nova voz em português.
+              </p>
+              <details
+                class="mt-4 bg-slate-950/60 border border-slate-700 rounded-2xl p-4"
+              >
+                <summary
+                  class="font-bold text-brand-pink flex items-center justify-between"
+                >
+                  Ler transcrição completa do podcast
+                  <span class="chev transition-transform">▾</span>
+                </summary>
+                <div class="mt-3 text-sm text-slate-300 leading-relaxed">
+                  <p>
+                    Olá! Seja bem-vindo ao podcast Falando Sobre Inclusão, do
+                    projeto Luncy IA.
+                  </p>
+                  <p>
+                    Hoje vamos conversar sobre um tema que está cada vez mais
+                    presente no nosso dia a dia: tecnologia, inteligência
+                    artificial e inclusão.
+                  </p>
+                  <p>
+                    Quando falamos em tecnologia, muitas vezes pensamos em
+                    celulares, computadores, aplicativos e inteligência
+                    artificial. Mas existe uma pergunta importante: será que
+                    toda essa tecnologia está realmente disponível para todas as
+                    pessoas?
+                  </p>
+                  <p>
+                    A acessibilidade digital busca justamente diminuir essas
+                    barreiras. Uma pessoa cega, por exemplo, pode utilizar
+                    leitores de tela para navegar em um site. Pessoas com baixa
+                    visão podem precisar de fontes maiores e de bom contraste.
+                    Pessoas surdas podem depender de legendas e transcrições. Já
+                    pessoas com mobilidade reduzida podem utilizar teclado,
+                    comandos de voz ou outros recursos para interagir com a
+                    tecnologia.
+                  </p>
+                  <p>
+                    Por isso, acessibilidade não deve ser tratada como um
+                    detalhe ou como um recurso extra. Ela deve fazer parte do
+                    planejamento desde o começo de um projeto.
+                  </p>
+                  <p>E onde entra a inteligência artificial?</p>
+                  <p>
+                    A IA pode ajudar muito nesse processo. Ela pode contribuir
+                    para gerar descrições de imagens, transformar fala em texto,
+                    produzir legendas, apoiar ferramentas de tradução e
+                    personalizar experiências digitais. Porém, a inteligência
+                    artificial precisa ser usada com responsabilidade. Ela não
+                    substitui a participação humana e também não garante,
+                    sozinha, que uma solução seja acessível.
+                  </p>
+                  <p>
+                    Outro ponto importante é a autonomia. Uma tecnologia
+                    inclusiva é aquela que permite que cada pessoa consiga
+                    realizar suas atividades com mais independência, segurança e
+                    dignidade.
+                  </p>
+                  <p>
+                    No final das contas, inovar não significa apenas criar algo
+                    novo. Significa criar soluções que possam ser utilizadas por
+                    mais pessoas.
+                  </p>
+                  <p>
+                    Tecnologia só é inovação de verdade quando inclui todo
+                    mundo.
+                  </p>
+                  <p>
+                    Obrigado por ouvir o podcast Falando Sobre Inclusão.
+                    Esperamos que este conteúdo ajude você a olhar para a
+                    tecnologia de uma maneira mais inclusiva, acessível e
+                    humana.
+                  </p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUIZ -->
+      <section id="quiz" class="py-16 lg:py-24">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div
+            class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-purple/10 border border-brand-purple/30 text-brand-purple text-xs font-bold uppercase tracking-wider mb-4"
+          >
+            Teste seus conhecimentos
+          </div>
+          <h2
+            class="font-heading text-3xl sm:text-4xl font-black text-white mb-8"
+          >
+            O quanto você sabe sobre acessibilidade?
+          </h2>
+          <div
+            id="quiz-box"
+            class="bg-brand-card border border-slate-700/80 rounded-3xl p-6 sm:p-8 text-left shadow-2xl"
+          >
+            <p
+              id="quiz-question"
+              class="text-lg font-semibold text-white mb-5"
+            ></p>
+            <div id="quiz-options" class="grid gap-3"></div>
+            <p
+              id="quiz-feedback"
+              class="mt-4 text-sm font-medium min-h-[1.2em]"
+            ></p>
+            <div class="flex items-center justify-between mt-4">
+              <span id="quiz-progress" class="text-xs text-slate-400"></span>
+              <button
+                id="quiz-next"
+                onclick="proximaPergunta()"
+                class="hidden bg-brand-blue hover:bg-blue-600 text-white font-bold px-5 py-2 rounded-xl text-sm"
+              >
+                Próxima →
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-800 py-12 bg-slate-950/60">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+        <p class="font-heading text-lg text-white font-bold">
+          Tecnologia<span class="text-brand-pink">4</span>Todos
+        </p>
+        <p class="text-sm text-slate-400">
+          <strong class="text-slate-200">Equipe:</strong> Luan e Francielly
+        </p>
+        <p class="text-sm text-slate-400 max-w-xl mx-auto">
+          Tecnologia só é inovação de verdade quando inclui todo mundo.
+          Acessibilidade não é um recurso extra — é um direito.
+        </p>
+        <p class="text-xs text-slate-600 pt-4">
+          Projeto integrador • Desenvolvido com apoio de inteligência artificial
+          e revisão humana.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      let currentScale = 1;
+      function changeFontSize(delta) {
+        currentScale = Math.min(1.4, Math.max(0.8, currentScale + delta));
+        document.documentElement.style.setProperty(
+          "--font-scale",
+          currentScale,
+        );
+      }
+      function toggleHighContrast() {
+        document.body.classList.toggle("high-contrast");
+      }
+      function toggleDyslexicFont() {
+        document.body.classList.toggle("dyslexic-mode");
+      }
+      function toggleReadingGuide() {
+        const guide = document.getElementById("reading-guide");
+        if (guide.style.display === "block") {
+          guide.style.display = "none";
+          window.removeEventListener("mousemove", moveReadingGuide);
+        } else {
+          guide.style.display = "block";
+          window.addEventListener("mousemove", moveReadingGuide);
+        }
+      }
+      function moveReadingGuide(e) {
+        document.getElementById("reading-guide").style.top =
+          e.clientY - 20 + "px";
+      }
+      function speakText(text) {
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = "pt-BR";
+          window.speechSynthesis.speak(u);
+        }
+      }
+      function toggleVoiceReader() {
+        const s = document.getElementById("voice-status");
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          s.innerText = "🔊 Ouvir";
+        } else {
+          speakText(document.getElementById("main-content").innerText);
+          s.innerText = "⏹ Parar";
+        }
+      }
+
+      const perguntas = [
+        {
+          q: "Qual atributo HTML descreve uma imagem para leitores de tela?",
+          opts: ["title", "alt", "aria-hidden", "data-desc"],
+          correta: 1,
+          exp: "O atributo alt descreve o conteúdo ou função da imagem.",
+        },
+        {
+          q: "Qual tag agrupa a área de conteúdo principal de uma página?",
+          opts: ["<section>", "<div>", "<main>", "<article>"],
+          correta: 2,
+          exp: "<main> identifica o conteúdo principal, único por página.",
+        },
+        {
+          q: "Para revelar uma transcrição sem JavaScript, qual elemento nativo usar?",
+          opts: ["<details>/<summary>", "<modal>", "<collapse>", "<toggle>"],
+          correta: 0,
+          exp: "<details> e <summary> criam um accordion nativo e acessível.",
+        },
+        {
+          q: "Quando usar aria-label em vez de alt em uma imagem?",
+          opts: [
+            "Sempre",
+            "Nunca — em imagens o correto é alt",
+            "Só em SVGs decorativos",
+            "Só em imagens de fundo",
+          ],
+          correta: 1,
+          exp: "Em <img>, o atributo correto é alt; ARIA é para quando o HTML nativo não é suficiente.",
+        },
+      ];
+      let atual = 0,
+        acertos = 0;
+
+      function renderPergunta() {
+        const p = perguntas[atual];
+        document.getElementById("quiz-question").textContent =
+          atual + 1 + ". " + p.q;
+        const box = document.getElementById("quiz-options");
+        box.innerHTML = "";
+        p.opts.forEach((opt, i) => {
+          const b = document.createElement("button");
+          b.textContent = opt;
+          b.className =
+            "quiz-opt text-left px-4 py-3 rounded-xl border border-slate-700 bg-slate-800/60 hover:border-brand-cyan text-sm font-medium transition-all";
+          b.onclick = () => responder(i);
+          box.appendChild(b);
+        });
+        document.getElementById("quiz-feedback").textContent = "";
+        document.getElementById("quiz-next").classList.add("hidden");
+        document.getElementById("quiz-progress").textContent =
+          "Pergunta " +
+          (atual + 1) +
+          " de " +
+          perguntas.length +
+          " • Acertos: " +
+          acertos;
+      }
+      function responder(i) {
+        const p = perguntas[atual];
+        const btns = document.querySelectorAll("#quiz-options button");
+        btns.forEach((b) => (b.disabled = true));
+        btns[p.correta].classList.add("correct");
+        const fb = document.getElementById("quiz-feedback");
+        if (i === p.correta) {
+          acertos++;
+          fb.textContent = "✅ Certo! " + p.exp;
+          fb.className = "mt-4 text-sm font-medium text-brand-emerald";
+        } else {
+          btns[i].classList.add("wrong");
+          fb.textContent = "❌ Quase! " + p.exp;
+          fb.className = "mt-4 text-sm font-medium text-brand-pink";
+        }
+        document.getElementById("quiz-progress").textContent =
+          "Pergunta " +
+          (atual + 1) +
+          " de " +
+          perguntas.length +
+          " • Acertos: " +
+          acertos;
+        if (atual < perguntas.length - 1) {
+          document.getElementById("quiz-next").classList.remove("hidden");
+        } else {
+          fb.textContent +=
+            " — Fim do quiz! Você acertou " +
+            acertos +
+            " de " +
+            perguntas.length +
+            ".";
+        }
+      }
+      function proximaPergunta() {
+        atual++;
+        renderPergunta();
+      }
+      renderPergunta();
+    </script>
+  </body>
+</html>
